@@ -1,0 +1,91 @@
+﻿paths:
+  data_root: /home/gerry/datas/SONAR_PUBLIC
+  output_dir: outputs/sonar-msaa
+
+model:
+  name: shufflenet_msaa
+  width_mult: 1.0
+  drop_path_rate: 0.1
+  # Pretrained options (see config.py -> PRETRAINED_MODELS):
+  #   none                              : Train from scratch.
+  #   torchvision_resnet50              : ResNet-50 ImageNet weights (torchvision).
+  #   torchvision_mobilenetv3_large     : MobileNetV3-Large ImageNet weights (torchvision).
+  #   torchvision_shufflenetv2_x1_0     : ShuffleNetV2 x1.0 ImageNet weights (torchvision).
+  #   torchvision_vit_b16               : ViT-B/16 Transformer weights (torchvision).
+  #   torchvision_swin_tiny             : Swin Transformer Tiny weights (torchvision).
+  pretrained: torchvision_shufflenetv2_x1_0
+
+data:
+  image_size: 256
+  num_workers: 8
+  pin_memory: true
+  split_mode: auto
+  split_folders:
+    train: train
+    val: val
+    test: test
+  splits:
+    train: 0.72
+    val: 0.14
+    test: 0.14
+  augment:
+    enabled: true
+    random_resized_crop:
+      scale: [0.7, 1.0]
+      ratio: [0.9, 1.1]
+    flips:
+      horizontal: 0.5
+      vertical: 0.2
+    rotation: 15
+    color_jitter:
+      brightness: 0.2
+      contrast: 0.2
+      saturation: 0.15
+      hue: 0.02
+    randaugment:
+      enabled: true
+      num_ops: 2
+      magnitude: 9
+    gaussian_blur:
+      enabled: true
+      kernel_size: 3
+      sigma: [0.1, 2.0]
+    random_erasing:
+      prob: 0.25
+      scale: [0.02, 0.2]
+      ratio: [0.3, 3.3]
+
+training:
+  device: auto
+  seed: 42
+  epochs: 180
+  warmup_epochs: 5
+  batch_size: 48
+  num_workers: 8
+  amp: true
+  early_stop_patience: 30
+  loss: dwfl
+  label_smoothing: 0.1
+  focal_gamma: 2.0
+  dwfl_alpha: 0.3
+  dwfl_gamma: 2.0
+  optimizer:
+    lr: 0.0004
+    weight_decay: 0.02
+  mixup:
+    enabled: true
+    mixup_alpha: 0.8
+    cutmix_alpha: 1.0
+    prob: 0.7
+    final_prob: 0.0
+    schedule: linear
+    start_epoch: 1
+    stop_epoch: 120
+    switch_prob: 0.5
+  ema:
+    enabled: true
+    decay: 0.9997
+    warmup_steps: 200
+
+
+
